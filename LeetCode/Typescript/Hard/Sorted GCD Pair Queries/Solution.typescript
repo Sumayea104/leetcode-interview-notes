@@ -1,0 +1,66 @@
+function gcdValues(nums: number[], queries: number[]): number[] {
+    const maxVal = Math.max(...nums);
+
+    // frequency[value] = occurrences of value
+    const freq = new Array<number>(maxVal + 1).fill(0);
+    for (const num of nums) freq[num]++;
+
+    // divisible[i] = how many numbers are divisible by i
+    const divisible = new Array<number>(maxVal + 1).fill(0);
+    for (let i = 1; i <= maxVal; i++) {
+        for (let j = i; j <= maxVal; j += i) {
+            divisible[i] += freq[j];
+        }
+    }
+
+    // exact[i] = number of pairs with gcd exactly i
+    const exact = new Array<number>(maxVal + 1).fill(0);
+
+    for (let i = maxVal; i >= 1; i--) {
+        const cnt = divisible[i];
+        let pairs = (cnt * (cnt - 1)) / 2;
+
+        for (let j = i + i; j <= maxVal; j += i) {
+            pairs -= exact[j];
+        }
+
+        exact[i] = pairs;
+    }
+
+    // Prefix counts
+    const values: number[] = [];
+    const prefix: number[] = [];
+
+    let total = 0;
+
+    for (let g = 1; g <= maxVal; g++) {
+        if (exact[g] === 0) continue;
+        total += exact[g];
+        values.push(g);
+        prefix.push(total);
+    }
+
+    // Answer queries
+    const ans = new Array<number>(queries.length);
+
+    for (let k = 0; k < queries.length; k++) {
+        const target = queries[k];
+
+        let left = 0;
+        let right = prefix.length - 1;
+
+        while (left < right) {
+            const mid = (left + right) >> 1;
+
+            if (prefix[mid] > target) {
+                right = mid;
+            } else {
+                left = mid + 1;
+            }
+        }
+
+        ans[k] = values[left];
+    }
+
+    return ans;
+}
