@@ -1,0 +1,20 @@
+function findGCD(nums: number[]): number {
+    let minNum = Infinity;
+    let maxNum = -Infinity;
+
+    for (const num of nums) {
+        if (num < minNum) minNum = num;
+        if (num > maxNum) maxNum = num;
+    }
+   
+    const gcd = (a: number, b: number): number => {
+        while (b !== 0) {
+            let temp = b;
+            b = a % b;
+            a = temp;
+        }
+        return a;
+    };
+    
+    return gcd(minNum, maxNum);
+}
