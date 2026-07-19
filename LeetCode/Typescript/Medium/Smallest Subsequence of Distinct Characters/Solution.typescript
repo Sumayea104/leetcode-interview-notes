@@ -1,0 +1,31 @@
+function smallestSubsequence(s: string): string {
+    const lastOccur: Record<string, number> = {};
+    const seen: Set<string> = new Set();
+    const stack: string[] = [];
+
+    for (let i = 0; i < s.length; i++) {
+        lastOccur[s[i]] = i;
+    }
+
+    for (let i = 0; i < s.length; i++) {
+        const char = s[i];
+
+        if (seen.has(char)) {
+            continue;
+        }
+
+        while (
+            stack.length > 0 && 
+            stack[stack.length - 1] > char && 
+            lastOccur[stack[stack.length - 1]] > i
+        ) {
+            const removedChar = stack.pop()!;
+            seen.delete(removedChar);
+        }
+
+        stack.push(char);
+        seen.add(char);
+    }
+
+    return stack.join('');
+}
