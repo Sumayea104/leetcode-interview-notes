@@ -8,8 +8,8 @@
 String, Enumeration
 
 ### 🚀 Performance
-- **Runtime:** N/A
-- **Memory:** N/A
+- **Runtime:** 282 ms
+- **Memory:** 91.1 MB
 
 ---
 
