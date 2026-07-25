@@ -1,6 +1,6 @@
 # 📝 23. Merge k Sorted Lists (LeetCode)
 
-🔗 [Problem Link](https://leetcode.com/problems/merge-k-sorted-lists/?envType=problem-list-v2&envId=rab78cw1)
+🔗 [Problem Link](https://leetcode.com/problems/merge-k-sorted-lists/)
 
 ![Difficulty](https://img.shields.io/badge/Difficulty-Hard-red) ![Language](https://img.shields.io/badge/Language-TypeScript-blue)
 
