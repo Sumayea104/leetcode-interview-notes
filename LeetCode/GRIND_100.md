@@ -3,7 +3,7 @@
 Track your progress on the Grind 100 coding interview preparation list.
 
 ## Progress
-- **Completed:** 2 / 100 (2.0%)
+- **Completed:** 3 / 100 (3.0%)
 
 ---
 
@@ -17,7 +17,7 @@ Track your progress on the Grind 100 coding interview preparation list.
 - [ ] Sort Colors
 - [ ] Product of Array Except Self
 - [ ] Next Permutation
-- [ ] Trapping Rain Water
+- [x] [Trapping Rain Water](./TypeScript/Hard/42. Trapping Rain Water/)
 - [ ] Find the Duplicate Number
 - [ ] Majority Element
 - [ ] Find All Numbers Disappeared in an Array
