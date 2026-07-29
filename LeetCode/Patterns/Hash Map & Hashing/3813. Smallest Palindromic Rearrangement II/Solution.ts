@@ -9,7 +9,7 @@ function smallestPalindrome(s: string, k: number): string {
         cnt[i] = Math.floor(cnt[i] / 2);
     }
 
-    // নির্দিষ্ট অক্ষরগুলোর মোট বিন্যাস সংখ্যা বের করার ফাংশন
+    // অবশিষ্ট অক্ষরগুলোর মোট বিন্যাস বের করার ফাংশন
     const getWays = (remLen: number): number => {
         let ways = 1, rem = remLen;
         for (let i = 0; i < 26; i++) {
@@ -26,7 +26,7 @@ function smallestPalindrome(s: string, k: number): string {
         return ways;
     };
 
-    // প্রথম অর্ধেক অংশ তৈরি
+    // প্রথম অর্ধেক তৈরি
     let left = "";
     for (let pos = 0; pos < m; pos++) {
         const remLen = m - pos, total = getWays(remLen);
