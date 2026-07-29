@@ -1,93 +1,53 @@
 function smallestPalindrome(s: string, k: number): string {
-    const n = s.length;
-    const m = Math.floor(n / 2);
+    const n = s.length, m = Math.floor(n / 2), CAP = k + 1;
+    const cnt = new Int32Array(26);
+    for (let i = 0; i < n; i++) cnt[s.charCodeAt(i) - 97]++;
 
-    // 1. Frequency count for the left half
-    const halfCount = new Int32Array(26);
-    let oddChar = "";
-    
-    for (let i = 0; i < n; i++) {
-        halfCount[s.charCodeAt(i) - 97]++;
-    }
-
+    let mid = "";
     for (let i = 0; i < 26; i++) {
-        if (halfCount[i] % 2 !== 0) {
-            oddChar = String.fromCharCode(97 + i);
-        }
-        halfCount[i] = Math.floor(halfCount[i] / 2);
+        if (cnt[i] % 2) mid = String.fromCharCode(97 + i);
+        cnt[i] = Math.floor(cnt[i] / 2);
     }
 
-    const CAP = k + 1;
-
-    // Helper to calculate multinomial combinations for remaining letters
-    // capped at k + 1 to avoid overflow.
-    function getTotalWays(remLen: number): number {
-        let ways = 1;
-        let rem = remLen;
-
+    // নির্দিষ্ট অক্ষরগুলোর মোট বিন্যাস সংখ্যা বের করার ফাংশন
+    const getWays = (remLen: number): number => {
+        let ways = 1, rem = remLen;
         for (let i = 0; i < 26; i++) {
-            const cnt = halfCount[i];
-            if (cnt <= 0) continue;
-
-            // Calculate C(rem, cnt)
-            let cVal = 1;
-            const r = Math.min(cnt, rem - cnt);
+            if (cnt[i] <= 0) continue;
+            let cVal = 1, r = Math.min(cnt[i], rem - cnt[i]);
             for (let j = 1; j <= r; j++) {
                 cVal = Math.floor((cVal * (rem - j + 1)) / j);
-                if (cVal > CAP) {
-                    cVal = CAP;
-                    break;
-                }
+                if (cVal > CAP) { cVal = CAP; break; }
             }
-
             ways = Math.min(CAP, ways * cVal);
             if (ways >= CAP) return CAP;
-
-            rem -= cnt;
+            rem -= cnt[i];
         }
         return ways;
-    }
+    };
 
-    // 2. Build left half position by position
-    const leftChars: string[] = new Array(m);
-
+    // প্রথম অর্ধেক অংশ তৈরি
+    let left = "";
     for (let pos = 0; pos < m; pos++) {
-        let matched = false;
-        const remLen = m - pos; // current length of remaining slots
-        
-        // Compute total ways for current state ONCE per position
-        const totalWays = getTotalWays(remLen);
+        const remLen = m - pos, total = getWays(remLen);
+        let ok = false;
 
         for (let c = 0; c < 26; c++) {
-            if (halfCount[c] === 0) continue;
+            if (cnt[c] === 0) continue;
+            
+            cnt[c]--;
+            const ways = total >= CAP ? getWays(remLen - 1) : Math.floor((total * (cnt[c] + 1)) / remLen);
 
-            // Ways if we pick character c: totalWays * count[c] / remLen
-            let waysWithC = 0;
-            if (totalWays >= CAP) {
-                // Recalculate directly if capped
-                halfCount[c]--;
-                waysWithC = getTotalWays(remLen - 1);
-                halfCount[c]++;
-            } else {
-                waysWithC = Math.floor((totalWays * halfCount[c]) / remLen);
-            }
-
-            if (waysWithC >= k) {
-                leftChars[pos] = String.fromCharCode(97 + c);
-                halfCount[c]--;
-                matched = true;
+            if (ways >= k) {
+                left += String.fromCharCode(97 + c);
+                ok = true;
                 break;
-            } else {
-                k -= waysWithC;
             }
+            k -= ways;
+            cnt[c]++; // Backtrack
         }
-
-        if (!matched) return "";
+        if (!ok) return "";
     }
 
-    // 3. Construct final palindrome
-    const leftHalf = leftChars.join("");
-    const rightHalf = leftChars.reverse().join("");
-
-    return leftHalf + (n % 2 !== 0 ? oddChar : "") + rightHalf;
+    return left + mid + left.split("").reverse().join("");
 }
