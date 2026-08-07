@@ -1,16 +1,13 @@
 function smallestNumber(num: string, t: number): string {
-
     let c2 = 0, c3 = 0, c5 = 0, c7 = 0;
-    
     let tempT = t;
     while (tempT % 2 === 0) { c2++; tempT /= 2; }
     while (tempT % 3 === 0) { c3++; tempT /= 3; }
     while (tempT % 5 === 0) { c5++; tempT /= 5; }
     while (tempT % 7 === 0) { c7++; tempT /= 7; }
-    
-    if (tempT > 1) return "-1"; // Invalid prime factor in t
 
-    // Helper: Compute factors contributed by a digit 1-9
+    if (tempT > 1) return "-1";
+
     function getDigitFactors(d: number): [number, number, number, number] {
         if (d === 2) return [1, 0, 0, 0];
         if (d === 3) return [0, 1, 0, 0];
@@ -23,42 +20,62 @@ function smallestNumber(num: string, t: number): string {
         return [0, 0, 0, 0];
     }
 
+    // Fixed getMinimalDigits function
     function getMinimalDigits(r2: number, r3: number, r5: number, r7: number): string {
         r2 = Math.max(0, r2);
         r3 = Math.max(0, r3);
         r5 = Math.max(0, r5);
         r7 = Math.max(0, r7);
 
-        let c8 = Math.floor(r2 / 3);
+        let count8 = Math.floor(r2 / 3);
         r2 %= 3;
 
-        let c9 = Math.floor(r3 / 2);
+        let count9 = Math.floor(r3 / 2);
         r3 %= 2;
 
-        let c6 = 0;
-        if (r2 === 1 && r3 === 1) {
-            c6 = 1;
-            r2 = 0;
-            r3 = 0;
+        let count4 = Math.floor(r2 / 2);
+        r2 %= 2;
+
+        let count6 = 0;
+        let count2 = r2;
+        let count3 = r3;
+
+        // Optimize 2 and 3 combinations for lexicographical order
+        if (count3 === 1 && count4 === 1) {
+            // 3 + 4 = 12 -> 2 * 6 (['2', '6'] < ['3', '4'])
+            count3 = 0;
+            count4 = 0;
+            count2 += 1;
+            count6 += 1;
+        } else if (count3 === 1 && count2 === 1) {
+            // 3 + 2 = 6 -> 6
+            count3 = 0;
+            count2 = 0;
+            count6 += 1;
         }
 
-        let c4 = Math.floor(r2 / 2);
-        r2 %= 2;
         let digits: number[] = [];
-        for (let i = 0; i < r2; i++) digits.push(2);
-        for (let i = 0; i < r3; i++) digits.push(3);
-        for (let i = 0; i < c4; i++) digits.push(4);
+        for (let i = 0; i < count2; i++) digits.push(2);
+        for (let i = 0; i < count3; i++) digits.push(3);
+        for (let i = 0; i < count4; i++) digits.push(4);
         for (let i = 0; i < r5; i++) digits.push(5);
-        for (let i = 0; i < c6; i++) digits.push(6);
+        for (let i = 0; i < count6; i++) digits.push(6);
         for (let i = 0; i < r7; i++) digits.push(7);
-        for (let i = 0; i < c8; i++) digits.push(8);
-        for (let i = 0; i < c9; i++) digits.push(9);
+        for (let i = 0; i < count8; i++) digits.push(8);
+        for (let i = 0; i < count9; i++) digits.push(9);
 
         digits.sort((a, b) => a - b);
         return digits.join('');
     }
 
     const N = num.length;
+
+    // Fast check if total minimal digits exceeds N
+    const globalMin = getMinimalDigits(c2, c3, c5, c7);
+    if (globalMin.length > N) {
+        const targetLen = globalMin.length;
+        return '1'.repeat(targetLen - globalMin.length) + globalMin;
+    }
 
     // Check if `num` itself is zero-free and divisible
     let validSelf = true;
@@ -92,7 +109,6 @@ function smallestNumber(num: string, t: number): string {
         prefixReq[i + 1] = [p2 - f2, p3 - f3, p5 - f5, p7 - f7];
     }
 
-   
     const startIdx = (zeroIdx !== -1) ? zeroIdx : N - 1;
 
     for (let i = startIdx; i >= 0; i--) {
@@ -117,9 +133,8 @@ function smallestNumber(num: string, t: number): string {
         }
     }
 
-    
-    const minSuffix = getMinimalDigits(c2, c3, c5, c7);
-    const targetLength = Math.max(N + 1, minSuffix.length);
-    const paddingOnes = '1'.repeat(targetLength - minSuffix.length);
-    return paddingOnes + minSuffix;
+    // Greater length L > N needed
+    const targetLength = Math.max(N + 1, globalMin.length);
+    const paddingOnes = '1'.repeat(targetLength - globalMin.length);
+    return paddingOnes + globalMin;
 }
