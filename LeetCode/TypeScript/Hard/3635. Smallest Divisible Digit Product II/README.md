@@ -8,8 +8,8 @@
 Math, String, Backtracking, Greedy, Number Theory
 
 ### 🚀 Performance
-- **Runtime:** N/A
-- **Memory:** N/A
+- **Runtime:** 370 ms
+- **Memory:** 106.4 MB
 
 ---
 
