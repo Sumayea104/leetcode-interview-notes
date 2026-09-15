@@ -2,21 +2,23 @@ class Solution:
     def maxPalindromes(self, s: str, k: int) -> int:
         n = len(s)
         ans = 0
-        last_end = -1 
-        for center in range(2 * n - 1):
-            left = center // 2
-            right = left + (center % 2)
+        i = 0
 
-            while left >= 0 and right < n and s[left] == s[right]:
-                length = right - left + 1
+        while i <= n - k:
 
-                if length >= k:
-                    if left > last_end:
-                        ans += 1
-                        last_end = right
-                        break
-                
-                left -= 1
-                right += 1
+            found = False
+            for length in (k, k + 1):
+                if i + length > n:
+                    continue
+
+                sub = s[i : i + length]
+                if sub == sub[::-1]:
+                    ans += 1
+                    i += length 
+                    found = True
+                    break
+            
+            if not found:
+                i += 1
 
         return ans
